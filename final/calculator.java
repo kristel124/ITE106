@@ -1,9 +1,12 @@
+package myPackage;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.*;
 
 public class Calculator extends JFrame implements ActionListener {
+
     private JTextField display;
     private double num1, num2, result;
     private String operator;
@@ -11,7 +14,7 @@ public class Calculator extends JFrame implements ActionListener {
     public Calculator() {
         setTitle("Calculator");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setSize(350, 400); 
+        setSize(350, 350);
         setLayout(new BorderLayout());
 
         getContentPane().setBackground(Color.BLACK);
@@ -23,14 +26,14 @@ public class Calculator extends JFrame implements ActionListener {
         add(display, BorderLayout.NORTH);
 
         JPanel buttonPanel = new JPanel();
-        buttonPanel.setLayout(new GridLayout(6, 4)); 
+        buttonPanel.setLayout(new GridLayout(5, 4));
 
         String[] buttons = {
-                "7", "8", "9", "/",
-                "4", "5", "6", "*",
-                "1", "2", "3", "-",
-                "0", ".", "=", "+",
-                "Backspace", "C", "History" 
+            "7", "8", "9", "/",
+            "4", "5", "6", "*",
+            "1", "2", "3", "-",
+            "0", ".", "=", "+",
+            "Backspace", "C"
         };
 
         for (String button : buttons) {
@@ -40,6 +43,27 @@ public class Calculator extends JFrame implements ActionListener {
         }
 
         add(buttonPanel, BorderLayout.CENTER);
+
+        JMenuBar menuBar = new JMenuBar();
+        JMenu menu = new JMenu("Menu");
+
+        JMenuItem computeMenuItem = new JMenuItem("Compute");
+        computeMenuItem.addActionListener(e -> display.setText(""));
+
+        JMenuItem historyMenuItem = new JMenuItem("View History");
+        historyMenuItem.addActionListener(e -> displayHistory());
+
+        JMenuItem exitMenuItem = new JMenuItem("Exit");
+        exitMenuItem.addActionListener(e -> System.exit(0));
+
+        menu.add(computeMenuItem);
+        menu.add(historyMenuItem);
+        menu.addSeparator();
+        menu.add(exitMenuItem);
+        menuBar.add(menu);
+
+        setJMenuBar(menuBar);
+
         setVisible(true);
     }
 
@@ -53,12 +77,10 @@ public class Calculator extends JFrame implements ActionListener {
                 num2 = Double.parseDouble(display.getText());
                 calculate();
                 display.setText(String.valueOf(result));
-                appendCalculationToFile(num1, operator, num2, result); 
+                appendCalculationToFile(num1, operator, num2, result);
             } catch (NumberFormatException ex) {
                 display.setText("Error");
             }
-        } else if (command.equals("History")) {
-            displayHistory();
         } else if (command.equals("Backspace")) {
             String text = display.getText();
             if (text.length() > 0) {
@@ -89,15 +111,8 @@ public class Calculator extends JFrame implements ActionListener {
                 result = num1 * num2;
                 break;
             case "/":
-                if (num2 == 0) {
-                    display.setText("Error: Division by zero");
-                    return; 
-                }
                 result = num1 / num2;
                 break;
-            default:
-                display.setText("Error: Invalid operator");
-                return;
         }
     }
 
